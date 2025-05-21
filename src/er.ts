@@ -37,8 +37,6 @@ export function isPartialIso(g1: Graph, g2: Graph, moves: [ID, ID][]): boolean {
 }
 
 function isPartialIsoOneSide(g1: Graph, g2: Graph, moves: [ID, ID][]): boolean {
-  const g1ToG2Mappings = Object.fromEntries(moves);
-
   for (const [g1Key_x, g2Key_x] of moves) {
     for (const [g1Key_y, g2Key_y] of moves) {
       if (g1Key_x === g1Key_y) {
