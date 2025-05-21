@@ -15,7 +15,7 @@ describe("makeSymmetric", () => {
     expect(
       makeSymmetricGraph({
         a: new Set("bc"),
-      })
+      }),
     ).toEqual({
       a: new Set("bc"),
       b: new Set("a"),
@@ -24,7 +24,7 @@ describe("makeSymmetric", () => {
   });
 });
 
-describe("partialIso ", () => {
+describe.only("partialIso ", () => {
   test("with no moves is trivially true", () => {
     const g1 = makeSymmetricGraph({
       a: new Set(["b", "c"]),
@@ -65,7 +65,7 @@ describe("partialIso ", () => {
         ["a", "x"],
         ["b", "y"],
         ["c", "z"],
-      ])
+      ]),
     ).toBe(true);
   });
 
@@ -88,7 +88,7 @@ describe("partialIso ", () => {
         ["c", "z"],
         ["a", "x"],
         ["b", "y"],
-      ])
+      ]),
     ).toBe(true);
   });
 
@@ -98,6 +98,7 @@ describe("partialIso ", () => {
     const g1 = makeSymmetricGraph({
       a: new Set(["b"]),
       b: new Set(["c"]),
+      c: new Set(),
     });
 
     // x <-> y <-> z (x <-> z)
@@ -105,6 +106,7 @@ describe("partialIso ", () => {
     const g2 = makeSymmetricGraph({
       x: new Set(["y", "z"]),
       y: new Set(["z"]),
+      z: new Set(),
     });
 
     expect(
@@ -112,7 +114,7 @@ describe("partialIso ", () => {
         ["a", "x"],
         ["b", "y"],
         ["c", "z"],
-      ])
+      ]),
     ).toBe(false);
   });
 
@@ -136,7 +138,7 @@ describe("partialIso ", () => {
       isPartialIso(g1, g2, [
         ["a", "x"],
         ["c", "z"],
-      ])
+      ]),
     ).toBe(true);
   });
 
@@ -158,7 +160,7 @@ describe("partialIso ", () => {
       isPartialIso(g1, g2, [
         ["a", "x"],
         ["c", "z"],
-      ])
+      ]),
     ).toBe(true);
   });
 
@@ -179,8 +181,31 @@ describe("partialIso ", () => {
         ["node1", "alpha"],
         ["node2", "beta"],
         ["node3", "gamma"],
-      ])
+      ]),
     ).toBe(true);
+  });
+
+  test("homework", () => {
+    const g1 = makeSymmetricGraph({
+      1: new Set(["2", "3"]),
+      2: new Set(["3", "4", "5"]),
+      3: new Set(["4", "5"]),
+      4: new Set(["5"]),
+    });
+
+    const g2 = makeSymmetricGraph({
+      a: new Set(["b", "c"]),
+      b: new Set(["c", "d", "e"]),
+      c: new Set([]),
+      d: new Set(["e"]),
+    });
+
+    expect(
+      isPartialIso(g1, g2, [
+        ["c", 3],
+        ["e", 1],
+      ]),
+    ).toBe(false);
   });
 });
 
@@ -260,6 +285,14 @@ describe("er game ", () => {
 
     test("solve", () => {
       expect(findDuplicatorStrategy(2, g1, g2, [])).toMatchSnapshot();
+    });
+
+    test("show a 3-game cannot be beat by duplicatpr", () => {
+      expect(findDuplicatorStrategy(3, g1, g2, [])).toBeUndefined();
+    });
+
+    test.todo("show initialy strategy is wrong", () => {
+      expect(findDuplicatorStrategy(1, g1, g2, [["c", 3]])).toBeUndefined();
     });
 
     test("solve with fixed initial moves", () => {
