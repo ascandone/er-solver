@@ -14,10 +14,6 @@ function getEdges(/* &mut */ g: Graph, from: ID): Set<ID> {
   return adjs;
 }
 
-function addEdge(/* &mut */ g: Graph, from: ID, to: ID) {
-  getEdges(g, from).add(to);
-}
-
 export function makeSymmetricGraph(g: Graph): Graph {
   const symG: Graph = {};
   for (const [id, adjs] of Object.entries(g)) {
@@ -41,94 +37,23 @@ export function isPartialIso(g1: Graph, g2: Graph, moves: [ID, ID][]): boolean {
 }
 
 function isPartialIsoOneSide(g1: Graph, g2: Graph, moves: [ID, ID][]): boolean {
-  // g1->g2 mappings
   const g1ToG2Mappings = Object.fromEntries(moves);
-  const g2ToG1Mappings = Object.fromEntries(moves.map(([l, r]) => [r, l]));
 
-  for (const [g1K, g1Adjs] of Object.entries(g1)) {
-    const mappedG1K = g2ToG1Mappings[g1K];
-    if (mappedG1K === undefined) {
-      continue;
-    }
-
-    // console.log({ mappedG1K, g1K, g1ToG2Mappings, g2ToG1Mappings });
-
-    for (const g1Adj of g1Adjs) {
-      // g1K<->g1Adj is a vertex
-      // therefore f(g1K)<->f(g1Adj) must be a vertex
-
-      const mappedG1Adj = g2ToG1Mappings[g1Adj];
-      // console.log({ mappedG1Adj, g1Adj, g2ToG1Mappings });
-      if (mappedG1Adj === undefined) {
+  for (const [g1Key_x, g2Key_x] of moves) {
+    for (const [g1Key_y, g2Key_y] of moves) {
+      if (g1Key_x === g1Key_y) {
         continue;
       }
 
-      const hasCorrespondingEdge = getEdges(g2, mappedG1K).has(mappedG1Adj);
-      if (!hasCorrespondingEdge) {
+      const sameEdge =
+        getEdges(g1, g1Key_x).has(String(g1Key_y)) ===
+        getEdges(g2, g2Key_x).has(String(g2Key_y));
+
+      if (!sameEdge) {
         return false;
       }
     }
   }
-
-  for (const [g2K, g2Adjs] of Object.entries(g2)) {
-    const mappedG2K = g1ToG2Mappings[g2K];
-    if (mappedG2K === undefined) {
-      continue;
-    }
-
-    for (const g2Adj of g2Adjs) {
-      // g1K<->g1Adj is a vertex
-      // therefore f(g1K)<->f(g1Adj) must be a vertex
-
-      const mappedG2Adj = g1ToG2Mappings[g2Adj];
-      if (mappedG2Adj === undefined) {
-        continue;
-      }
-
-      const hasCorrespondingEdge = getEdges(g1, mappedG2K).has(mappedG2Adj);
-      if (!hasCorrespondingEdge) {
-        return false;
-      }
-    }
-  }
-
-  return true;
-
-  // g1's keys
-  const mappedG2: Graph = {};
-
-  for (const [g1K, g1Adjs] of Object.entries(g1)) {
-    const g1K__mapped = g1ToG2Mappings[g1K];
-    if (g1K__mapped === undefined) {
-      continue;
-    }
-
-    for (const g1Adj of g1Adjs) {
-      const g1Adj__mapped = g1ToG2Mappings[g1Adj];
-      if (g1Adj__mapped === undefined) {
-        continue;
-      }
-
-      addEdge(mappedG2, g1K__mapped, g1Adj__mapped);
-    }
-  }
-
-  console.log(mappedG2);
-
-  // compare graphs
-  for (const [mappedG2K, mappedG2Adjs] of Object.entries(mappedG2)) {
-    const originalAdjs = getEdges(g2, mappedG2K);
-
-    for (const mappedAdj of mappedG2Adjs) {
-      const has = originalAdjs.has(String(mappedAdj));
-      console.log({ mappedG2K, mappedAdj });
-
-      if (!has) {
-        return false;
-      }
-    }
-  }
-
   return true;
 }
 

@@ -24,7 +24,7 @@ describe("makeSymmetric", () => {
   });
 });
 
-describe.only("partialIso ", () => {
+describe("partialIso ", () => {
   test("with no moves is trivially true", () => {
     const g1 = makeSymmetricGraph({
       a: new Set(["b", "c"]),
@@ -202,6 +202,29 @@ describe.only("partialIso ", () => {
 
     expect(
       isPartialIso(g1, g2, [
+        [3, "c"],
+        [1, "e"],
+      ]),
+    ).toBe(false);
+  });
+
+  test("homework (flip)", () => {
+    const g1 = makeSymmetricGraph({
+      1: new Set(["2", "3"]),
+      2: new Set(["3", "4", "5"]),
+      3: new Set(["4", "5"]),
+      4: new Set(["5"]),
+    });
+
+    const g2 = makeSymmetricGraph({
+      a: new Set(["b", "c"]),
+      b: new Set(["c", "d", "e"]),
+      c: new Set([]),
+      d: new Set(["e"]),
+    });
+
+    expect(
+      isPartialIso(g2, g1, [
         ["c", 3],
         ["e", 1],
       ]),
@@ -291,8 +314,8 @@ describe("er game ", () => {
       expect(findDuplicatorStrategy(3, g1, g2, [])).toBeUndefined();
     });
 
-    test.todo("show initialy strategy is wrong", () => {
-      expect(findDuplicatorStrategy(1, g1, g2, [["c", 3]])).toBeUndefined();
+    test("show initialy strategy is wrong", () => {
+      expect(findDuplicatorStrategy(1, g1, g2, [[3, "c"]])).toBeUndefined();
     });
 
     test("solve with fixed initial moves", () => {
@@ -300,23 +323,23 @@ describe("er game ", () => {
     });
 
     test("c->1", () => {
-      expect(findDuplicatorStrategy(1, g1, g2, [["c", 1]]))
+      expect(findDuplicatorStrategy(1, g1, g2, [[1, "c"]]))
         .toMatchInlineSnapshot(`
-        {
-          "2": "a",
-          "3": "a",
-          "4": "a",
-          "5": "a",
-          "a": "2",
-          "b": "2",
-          "d": "2",
-          "e": "2",
-        }
-      `);
+          {
+            "2": "a",
+            "3": "a",
+            "4": "d",
+            "5": "d",
+            "a": "2",
+            "b": "2",
+            "d": "4",
+            "e": "4",
+          }
+        `);
     });
 
     test("b->2", () => {
-      expect(findDuplicatorStrategy(1, g1, g2, [["b", 2]]))
+      expect(findDuplicatorStrategy(1, g1, g2, [[2, "b"]]))
         .toMatchInlineSnapshot(`
         {
           "1": "a",
@@ -332,26 +355,26 @@ describe("er game ", () => {
     });
 
     test("1->c", () => {
-      expect(findDuplicatorStrategy(1, g1, g2, [[1, "c"]]))
+      expect(findDuplicatorStrategy(1, g1, g2, [["c", 1]]))
         .toMatchInlineSnapshot(`
-        {
-          "2": "a",
-          "3": "a",
-          "4": "d",
-          "5": "d",
-          "a": "2",
-          "b": "2",
-          "d": "4",
-          "e": "4",
-        }
-      `);
+          {
+            "2": "a",
+            "3": "a",
+            "4": "a",
+            "5": "a",
+            "a": "2",
+            "b": "2",
+            "d": "2",
+            "e": "2",
+          }
+        `);
     });
 
     test("4->d", () => {
       expect(findDuplicatorStrategy(1, g1, g2, [[4, "d"]]))
         .toMatchInlineSnapshot(`
           {
-            "1": "a",
+            "1": "c",
             "2": "b",
             "3": "b",
             "5": "b",
